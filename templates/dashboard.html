@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SNS自動投稿ツール</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <h1>Raspberry Pi SNS自動投稿ツール</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <section class="card">
+      <h2>管理画面設定</h2>
+      <form method="post">
+        <label>投稿ジャンル
+          <input type="text" name="genre" value="{{ settings.genre }}" required>
+        </label>
+
+        <label>投稿間隔（分）
+          <input type="number" min="1" name="post_interval_minutes" value="{{ settings.post_interval_minutes }}" required>
+        </label>
+
+        <label>アフィリエイトリンク
+          <input type="url" name="affiliate_link" value="{{ settings.affiliate_link }}" required>
+        </label>
+
+        <label>X Access Token
+          <input type="password" name="x_access_token" value="{{ settings.x_access_token }}">
+        </label>
+
+        <label>Threads Access Token
+          <input type="password" name="threads_access_token" value="{{ settings.threads_access_token }}">
+        </label>
+
+        <label>Threads User ID
+          <input type="text" name="threads_user_id" value="{{ settings.threads_user_id }}">
+        </label>
+
+        <label>OpenAI API Key
+          <input type="password" name="openai_api_key" value="{{ settings.openai_api_key }}">
+        </label>
+
+        <label>OpenAI Model
+          <input type="text" name="openai_model" value="{{ settings.openai_model }}">
+        </label>
+
+        <button type="submit">設定を保存</button>
+      </form>
+
+      <form action="{{ url_for('post_now') }}" method="post" class="inline-form">
+        <button type="submit" class="secondary">今すぐ投稿実行</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>投稿ログ</h2>
+      <ul class="logs">
+        {% for log in logs %}
+          <li>
+            <span class="time">{{ log.timestamp }}</span>
+            <span class="level {{ log.level|lower }}">{{ log.level }}</span>
+            <span>{{ log.message }}</span>
+          </li>
+        {% else %}
+          <li>ログはまだありません。</li>
+        {% endfor %}
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
